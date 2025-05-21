@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Status</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>Equipment Status</h1>
+
+    <div id="app">
+        <!-- {{ lastUpdate }} -->
+        <li v-for="row in rows">{{ row.equipment }} - {{ row.status }}</li>
+    </div>
+    <!-- <span id="placeholder_"></span> -->
+
+    <script>
+        const socket = io('http://localhost:8000');
+        const {createApp, ref} = Vue;
+        
+        // Update on new data
+        socket.on('update', (data) => {
+            createApp({
+                setup(){
+                    const rows  = ref(data);
+                    return {
+                        rows
+                    }
+                }
+            }).mount('#app')
+            
+            console.log(data)
+        });
+    </script>
+</body>
+</html>
