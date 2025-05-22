@@ -12,12 +12,14 @@
 <body>
     <h1 class="display-3">Giotto Line</h1>
 
+    <!-- VueJS App here the app component will ve served -->
     <div id="app" class="container-md">
         <table id="equipment-table" class="table table-hover">
             <tr>
                 <th>Equipment</th>
                 <th>Status</th>
             </tr>
+            <!-- Creates a tr (table row) for each one of the values in the list ('rows')-->
             <tr v-for="row in rows" v-bind:class="{'table-success': (row.status==='Running'),'table-danger':(row.status!=='Running')}">
                 <td>{{ row.equipment }}</td>
                 <td>{{ row.status }}</td>
@@ -33,12 +35,15 @@
         // Create the equipmentList as an empty Array
         let equipmentList = ref([]);
 
-        // Initialize the VueJS App
+        // Initialize the VueJS App component
         const app = createApp({
             setup(){
                 const rows  = ref(equipmentList);
                 
+                // Sends the equipmenList to the app component
                 provide('equipmentList', equipmentList);
+                
+                // Watches the equipmentList for changes (updates, etc)
                 watch(equipmentList, (newValue) => {
                     rows.value = newValue;
                 });
