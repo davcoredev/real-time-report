@@ -40,18 +40,21 @@ async def fetch_data():
     cursor.execute(secrets['query'])
     rows = cursor.fetchall()
     conn.close()
+    
     return [{'equipment':row.CurrentEquipment, 
              'seconds':row.SecondsSinceLastOcurrence,
-             'status': 'Running' if row.SecondsSinceLastOcurrence >= 15 else 'Stopped' } for row in rows]
+             'queryTimestamp': str(row.QueryTimestamp),
+             'dateLastRecord': str(row.CreatedAt),
+             'status': 'Running' if row.SecondsSinceLastOcurrence <= 15 else 'Stopped' } for row in rows]
 
 # Background task for real-time updates
 async def push_updates():
     while True:
         data = await fetch_data()
         await sio.emit('update', data)
-        await asyncio.sleep(60) # update every minute
+        await asyncio.sleep(30) # update every 30 seconds
 
-# Serve the frontend
+# Serve the frontend (index.html)
 @app.get('/')
 async def serve_frontend():
     return FileResponse('../frontend/index.html')

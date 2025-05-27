@@ -14,54 +14,28 @@
 
     <!-- VueJS App here the app component will ve served -->
     <div id="app" class="container-md">
+
+        <h4 class="display-6" v-if="rows.length > 0">Last Refresh: {{  Date(rows[0].queryTimestamp).toLocaleString('en-US', {hour: 'numeric', hour12: true}) }}</h4>
+        <h4 class="display-6" v-else>Last Refresh: loading ...</h4>
+
         <table id="equipment-table" class="table table-hover">
             <tr>
                 <th>Equipment</th>
                 <th>Status</th>
+                <th>Last Record (Date)</th>
+                <th>Seconds since last record</th>
             </tr>
             <!-- Creates a tr (table row) for each one of the values in the list ('rows')-->
             <tr v-for="row in rows" v-bind:class="{'table-success': (row.status==='Running'),'table-danger':(row.status!=='Running')}">
                 <td>{{ row.equipment }}</td>
                 <td>{{ row.status }}</td>
+                <td>{{ row.dateLastRecord }}</td>
+                <td>{{ row.seconds  }}</td>
             </tr>
         </table>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-    <script>
-        const socket = io('http://localhost:8000');
-        const {createApp, ref, provide, watch} = Vue;
-        
-        // Create the equipmentList as an empty Array
-        let equipmentList = ref([]);
-
-        // Initialize the VueJS App component
-        const app = createApp({
-            setup(){
-                const rows  = ref(equipmentList);
-                
-                // Sends the equipmenList to the app component
-                provide('equipmentList', equipmentList);
-                
-                // Watches the equipmentList for changes (updates, etc)
-                watch(equipmentList, (newValue) => {
-                    rows.value = newValue;
-                });
-                return { rows }
-            }
-        });
-        
-        // Print in console the errors
-        app.config.errorHandler = (err) => {console.error(err)};
-        
-        // Mount the app into the div id#app
-        app.mount('#app');
-        
-        // Update on new data
-        socket.on('update', (data) => {
-            equipmentList.value = data;
-            // console.log(equipmentList.value);
-        });
-    </script>
+    <script src="/static/script.js"></script>
 </body>
 </html>
